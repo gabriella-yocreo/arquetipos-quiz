@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test de Arquetipos Emprendedores — Co Creando</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal: #03B3C0;
+    --teal-dark: #028591;
+    --magenta: #FB0A84;
+    --ink: #14110C;
+    --ink-soft: #3D3B32;
+    --grad-a: #DCEFC0;
+    --grad-b: #EAF0A0;
+    --grad-c: #F1EC59;
+    --radius: 999px;
+    --radius-card: 14px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{ margin:0; padding:0; }
+
+  body{
+    font-family: 'Poppins', sans-serif;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--grad-a) 0%, var(--grad-b) 55%, var(--grad-c) 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: clamp(20px, 5vw, 56px) 18px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* subtle tiled blob texture, echoing the poster background pattern */
+  body::before{
+    content:"";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.35;
+    pointer-events: none;
+    background-image: radial-gradient(ellipse 60px 40px at 10% 20%, rgba(255,255,255,0.5), transparent 60%),
+                       radial-gradient(ellipse 80px 50px at 80% 10%, rgba(255,255,255,0.4), transparent 60%),
+                       radial-gradient(ellipse 70px 45px at 30% 70%, rgba(255,255,255,0.4), transparent 60%),
+                       radial-gradient(ellipse 90px 55px at 90% 80%, rgba(255,255,255,0.4), transparent 60%),
+                       radial-gradient(ellipse 60px 40px at 60% 45%, rgba(255,255,255,0.35), transparent 60%);
+  }
+
+  #app{ width:100%; max-width: 720px; position: relative; z-index: 1; }
+
+  h1, h2, h3{ font-family:'Poppins', sans-serif; margin:0; line-height:1.15; }
+
+  .eyebrow{
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .logo{
+    display:block;
+    height: 46px;
+    margin: 0 auto 22px;
+  }
+
+  .screen{ display:none; }
+  .screen.active{ display:block; animation: rise 0.35s ease; }
+  @media (prefers-reduced-motion: reduce){ .screen.active{ animation:none; } }
+  @keyframes rise{ from{ opacity:0; transform: translateY(6px);} to{ opacity:1; transform: translateY(0);} }
+
+  button{ font-family:'Poppins', sans-serif; cursor:pointer; }
+
+  /* ---- Intro ---- */
+  .intro-card{
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(20,17,12,0.08);
+    border-radius: var(--radius-card);
+    padding: clamp(28px, 6vw, 46px);
+    text-align: center;
+    backdrop-filter: blur(2px);
+  }
+  .intro-title{ font-size: clamp(1.7rem, 5vw, 2.35rem); font-weight: 700; color: var(--ink); }
+  .intro-sub{ margin: 16px 0 26px; color: var(--ink-soft); font-size: 1rem; line-height: 1.6; }
+  .intro-quote{
+    font-weight: 500;
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--ink);
+    max-width: 480px;
+    margin: 0 auto 26px;
+  }
+  .credit{ font-size: 0.78rem; color: var(--ink-soft); margin-top: 26px; }
+
+  .btn-primary{
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    padding: 15px 36px;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    box-shadow: 0 4px 14px rgba(3,179,192,0.35);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .btn-primary:hover{ background: var(--teal-dark); }
+  .btn-primary:active{ transform: scale(0.98); }
+  .btn-primary:focus-visible{ outline: 3px solid var(--magenta); outline-offset: 2px; }
+
+  .btn-ghost{
+    background: #fff;
+    border: 2px solid var(--teal);
+    color: var(--teal-dark);
+    padding: 13px 30px;
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+  .btn-ghost:focus-visible{ outline: 3px solid var(--magenta); outline-offset: 2px; }
+
+  /* ---- Progress ---- */
+  .progress-row{ display:flex; align-items:center; gap:12px; margin-bottom: 26px; }
+  .progress-label{ font-size:0.78rem; color: var(--ink-soft); white-space:nowrap; font-weight:700; }
+  .progress-track{ flex:1; height:8px; background: rgba(20,17,12,0.12); border-radius:4px; overflow:hidden; }
+  .progress-fill{ height:100%; background: var(--teal); width:0%; transition: width 0.35s ease; border-radius:4px; }
+  @media (prefers-reduced-motion: reduce){ .progress-fill{ transition:none; } }
+
+  .quiz-card{
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(20,17,12,0.08);
+    border-radius: var(--radius-card);
+    padding: clamp(24px, 5vw, 38px);
+  }
+
+  .q-text{ font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight:700; color: var(--ink); margin-bottom:24px; }
+
+  .options{ display:flex; flex-direction:column; gap:10px; }
+  .option{
+    text-align:left;
+    background:#fff;
+    border: 2px solid transparent;
+    border-radius: var(--radius-card);
+    padding: 14px 18px;
+    font-size: 0.97rem;
+    line-height: 1.45;
+    color: var(--ink);
+    display:flex;
+    gap: 12px;
+    transition: border-color 0.15s ease, transform 0.1s ease;
+  }
+  .option:hover{ border-color: var(--teal); }
+  .option:active{ transform: scale(0.99); }
+  .option:focus-visible{ outline: 3px solid var(--magenta); outline-offset: 1px; }
+  .option .tag{
+    font-weight: 800;
+    color: var(--teal-dark);
+    flex-shrink:0;
+  }
+
+  .back-link{
+    display:inline-block; margin-top:18px; font-size:0.82rem;
+    color: var(--ink-soft); text-decoration:underline; background:none; border:none; padding:0;
+  }
+
+  /* ---- Result ---- */
+  .result-header{ text-align:center; margin-bottom: 22px; }
+  .result-name{ font-size: clamp(1.6rem, 5vw, 2.1rem); font-weight:800; margin-top: 6px; }
+
+  .poster-img{
+    width: 100%;
+    display:block;
+    border-radius: var(--radius-card);
+    box-shadow: 0 8px 24px rgba(20,17,12,0.18);
+    margin-bottom: 18px;
+  }
+
+  .color-box{
+    margin-top: 8px;
+    padding: 18px 22px;
+    background: rgba(255,255,255,0.6);
+    border: 2px dashed var(--teal);
+    border-radius: var(--radius-card);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .color-box b{ color: var(--ink); }
+
+  .cta-box{
+    margin-top: 22px;
+    padding: 26px 22px;
+    background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+    border-radius: var(--radius-card);
+    text-align: center;
+    color: #fff;
+  }
+  .cta-box p{ margin: 0 0 16px; font-size: 0.98rem; line-height: 1.55; }
+  .cta-box .btn-cta{
+    display: inline-block;
+    background: #fff;
+    color: var(--teal-dark);
+    font-weight: 700;
+    padding: 13px 30px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+  .cta-box .btn-cta:hover{ background: #f2f2f2; }
+
+  .download-box{
+    margin-top: 18px;
+    padding: 22px;
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(20,17,12,0.1);
+    border-radius: var(--radius-card);
+    text-align: center;
+  }
+  .download-label{ margin: 0 0 14px; font-weight:600; font-size: 0.95rem; color: var(--ink); }
+  .download-row{
+    display:flex;
+    gap: 10px;
+    justify-content:center;
+    flex-wrap: wrap;
+  }
+  .download-row a{
+    display:inline-block;
+    background: var(--teal);
+    color:#fff;
+    font-weight:700;
+    font-size: 0.92rem;
+    padding: 13px 22px;
+    border-radius: var(--radius);
+    text-decoration:none;
+  }
+  .download-row a:hover{ background: var(--teal-dark); }
+  .download-row a:focus-visible{ outline: 3px solid var(--magenta); outline-offset: 2px; }
+
+  .restart-row{ text-align:center; margin-top: 32px; }
+
+  footer.sig{
+    text-align:center;
+    margin-top: 30px;
+  }
+  footer.sig img{ height: 26px; opacity: 0.85; margin-bottom: 8px; }
+  footer.sig p{ font-size: 0.72rem; color: var(--ink-soft); margin:0; }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- INTRO -->
+  <section class="screen active" id="screen-intro">
+    <div class="intro-card">
+      <img class="logo" id="logo-intro" src="posters/logo.png" alt="Co Creando la Innovación y Sustentabilidad Social AC" />
+      <div class="eyebrow">Test de Arquetipos Emprendedores</div>
+      <h1 class="intro-title">¿Qué arquetipo emprendedor vive en ti?</h1>
+      <p class="intro-sub">Hola, ¡Gracias por estar aquí!</p>
+      <p class="intro-sub">Este test está diseñado para ayudarte a descubrir qué tipo de emprendedora creativa vive en ti. No hay respuestas correctas ni incorrectas — solo caminos diferentes, todos valiosos.</p>
+      <p class="intro-sub">Responde con sinceridad y sin pensarlo demasiado. Tus primeras reacciones suelen ser las más auténticas y las que mejor reflejan tu perfil. Confía en tu intuición.</p>
+      <button class="btn-primary" id="btn-start">Comenzar el test</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="screen" id="screen-quiz">
+    <div class="progress-row">
+      <span class="progress-label" id="progress-label">Pregunta 1 de 15</span>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div class="quiz-card">
+      <h2 class="q-text" id="q-text"></h2>
+      <div class="options" id="q-options"></div>
+      <button class="back-link" id="btn-back" style="display:none;">← Volver a la pregunta anterior</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="screen-result">
+    <div class="result-header">
+      <div class="eyebrow">Tu arquetipo emprendedor</div>
+      <h2 class="result-name" id="result-name"></h2>
+    </div>
+
+    <img class="poster-img" id="poster-main" alt="">
+    <img class="poster-img" id="poster-activities" alt="">
+
+    <div class="color-box" id="result-color"></div>
+
+    <div class="cta-box">
+      <p>¿Quieres seguir creciendo como emprendedora? Explora cursos y recursos gratuitos en Academia Co Creando.</p>
+      <a class="btn-cta" href="https://cocreandoacademy.odoo.com/" target="_blank" rel="noopener">Ir a Academia Co Creando →</a>
+    </div>
+
+    <div class="download-box">
+      <p class="download-label">Descarga tus resultados</p>
+      <div class="download-row">
+        <a id="download-main" download>Descargar perfil</a>
+        <a id="download-activities" download>Descargar actividades</a>
+      </div>
+    </div>
+
+    <div class="restart-row">
+      <button class="btn-ghost" id="btn-restart">Volver a empezar</button>
+    </div>
+
+    <footer class="sig">
+      <img src="posters/logo.png" alt="Co Creando">
+      <p>Test de Arquetipos Emprendedores — Co Creando la Innovación y Sustentabilidad Social AC</p>
+    </footer>
+  </section>
+
+</div>
+
+<script>
+/* ============ IMAGE PATHS (files live in the /posters folder next to this page) ============ */
+const POSTERS = {
+  jaguar:   { main: "posters/jaguar_main.jpg",   activities: "posters/jaguar_activities.jpg" },
+  colibri:  { main: "posters/colibri_main.jpg",  activities: "posters/colibri_activities.jpg" },
+  quetzal:  { main: "posters/quetzal_main.jpg",  activities: "posters/quetzal_activities.jpg" },
+  puma:     { main: "posters/puma_main.jpg",     activities: "posters/puma_activities.jpg" },
+  cardenal: { main: "posters/cardenal_main.jpg", activities: "posters/cardenal_activities.jpg" },
+  lobo:     { main: "posters/lobo_main.jpg",     activities: "posters/lobo_activities.jpg" }
+};
+
+/* ============ SHORT PROFILE META (names + alt text + partner blurb for accessibility) ============ */
+const PROFILE_META = {
+  jaguar:   { name: "Jaguar",   role: "La Arquitecta Emprendedora" },
+  colibri:  { name: "Colibrí",  role: "La Jardinera Social" },
+  quetzal:  { name: "Quetzal",  role: "La Visionaria Radical" },
+  puma:     { name: "Puma",     role: "La Regeneradora Sistémica" },
+  cardenal: { name: "Cardenal", role: "La Catalizadora de Ideas" },
+  lobo:     { name: "Lobo",     role: "La Guardiana Creativa" }
+};
+
+const ANIMAL_ORDER = ["jaguar","colibri","quetzal","puma","cardenal","lobo"];
+
+/* ============ QUESTIONS (14 scored + 1 bonus) ============ */
+const QUESTIONS = [
+  { q: "¿Cuál de estas frases resuena más contigo?", options: [
+    { t: "\u201cTodo florece cuando se cuidan los vínculos humanos.\u201d", a: "colibri" },
+    { t: "\u201cTodo problema tiene solución si se diseña bien.\u201d", a: "jaguar" },
+    { t: "\u201cSostener es revolucionario.\u201d", a: "lobo" },
+    { t: "\u201cPensar diferente es mi forma de activar el cambio.\u201d", a: "cardenal" },
+    { t: "\u201cLo profundo no siempre es visible, pero transforma.\u201d", a: "puma" },
+    { t: "\u201cSoñar distinto es el primer acto de rebeldía.\u201d", a: "quetzal" }
+  ]},
+  { q: "Cuando tienes una nueva idea…", options: [
+    { t: "Me enfoco en cómo hacerla perdurable.", a: "lobo" },
+    { t: "La suelto sin pensarlo mucho: me interesa ver qué provoca en otros.", a: "cardenal" },
+    { t: "Pienso en la utilidad que puede tener para otras personas.", a: "colibri" },
+    { t: "Analizo qué sistemas necesitan cambiar.", a: "puma" },
+    { t: "Diseño el plan que tendría que seguir para convertirla en realidad.", a: "jaguar" },
+    { t: "Imagino los mensajes profundos que podría transmitir.", a: "quetzal" }
+  ]},
+  { q: "¿Qué te impulsa a iniciar un proyecto?", options: [
+    { t: "Tener una estructura sólida para convertirlo en realidad.", a: "jaguar" },
+    { t: "Saber que sumará al bienestar de mi comunidad/círculo.", a: "colibri" },
+    { t: "El impulso de transformar con valentía.", a: "quetzal" },
+    { t: "Cambiar injusticias que observo.", a: "puma" },
+    { t: "Cuidar aquello que es importante.", a: "lobo" },
+    { t: "Incidir en las maneras de pensar o actuar.", a: "cardenal" }
+  ]},
+  { q: "¿Cuál es tu relación con la visibilidad pública?", options: [
+    { t: "Prefiero un reconocimiento colectivo entre las personas involucradas.", a: "colibri" },
+    { t: "Prefiero que mis resultados sean los reconocidos.", a: "jaguar" },
+    { t: "Aunque deseo el reconocimiento, me siento vulnerable al exponerme.", a: "quetzal" },
+    { t: "A veces no estoy de acuerdo en cómo se comunican los reconocimientos.", a: "cardenal" },
+    { t: "No necesito reconocimiento, siento comodidad estando tras bambalinas, sosteniendo la obra.", a: "lobo" },
+    { t: "Siento más comodidad trabajando en la base, sin protagonismos.", a: "puma" }
+  ]},
+  { q: "¿Qué es lo más importante al tomar decisiones?", options: [
+    { t: "El horizonte de posibilidades que se pueden abrir.", a: "cardenal" },
+    { t: "La estabilidad y continuidad.", a: "lobo" },
+    { t: "El procurar el bienestar de los vínculos entre/y de la comunidad.", a: "colibri" },
+    { t: "Una estrategia sostenible y coherente.", a: "jaguar" },
+    { t: "Mantener la ética social siempre.", a: "puma" },
+    { t: "La verdad interior de cada persona.", a: "quetzal" }
+  ]},
+  { q: "Cuando trabajas en grupo, tú…", options: [
+    { t: "Eres líder y aseguras el avance.", a: "jaguar" },
+    { t: "Inspiras desde la visión o ideas originales e innovadoras.", a: "quetzal" },
+    { t: "Propones ideas nuevas y dinámicas, aunque a veces incómodas.", a: "cardenal" },
+    { t: "Inspiras reflexiones sobre el sistema y su estructura.", a: "puma" },
+    { t: "Identificas los detalles que otras personas no ven y te adaptas a cubrirlos.", a: "lobo" },
+    { t: "Sirves como cohesionadora del equipo.", a: "colibri" }
+  ]},
+  { q: "¿Qué te cuesta más?", options: [
+    { t: "Delegar, porque prefiero asegurarme de que se haga bien.", a: "jaguar" },
+    { t: "Priorizar mis propios deseos sobre los de las otras personas.", a: "colibri" },
+    { t: "Accionar y materializar mis ideas profundas.", a: "quetzal" },
+    { t: "Recibir reconocimiento público por mis avances.", a: "puma" },
+    { t: "Adaptarme a procesos lineales, estructuras inamovibles y ritmos más lentos.", a: "cardenal" },
+    { t: "Expresar lo que pienso sin friccionar mis relaciones.", a: "lobo" }
+  ]},
+  { q: "¿Qué te frustra más en los proyectos colaborativos?", options: [
+    { t: "El trabajo superficial, que ni siquiera cuestione la estructura o el sistema.", a: "puma" },
+    { t: "El rechazo de ideas nuevas y cambios frescos.", a: "cardenal" },
+    { t: "Que las personas no se escuchen o se cuiden.", a: "colibri" },
+    { t: "La falta de una meta, plan, estructura o roles definidos.", a: "jaguar" },
+    { t: "Que no se quieran romper paradigmas con nuevas propuestas.", a: "quetzal" },
+    { t: "La falta de compromiso con el proceso.", a: "lobo" }
+  ]},
+  { q: "¿Qué haces cuando un proyecto pierde rumbo?", options: [
+    { t: "Trabajo para reorganizar el plan y recuperar la motivación con intención.", a: "jaguar" },
+    { t: "Busco el enfoque conjunto a través de la reconexión emocional con el proyecto.", a: "colibri" },
+    { t: "Reviso por qué el proyecto se desvió de la visión.", a: "quetzal" },
+    { t: "Evalúo los cambios estructurales que está provocando, aunque sean pequeños.", a: "puma" },
+    { t: "Propongo nuevas narrativas y maneras de trabajar sobre el proyecto.", a: "cardenal" },
+    { t: "Acompaño desde la presencia activa para sostenerlo.", a: "lobo" }
+  ]},
+  { q: "Cuando enfrentas un obstáculo…", options: [
+    { t: "Pongo empeño en cambiar mi perspectiva y enfoque sobre el obstáculo.", a: "cardenal" },
+    { t: "Actúo desde mis principios y continúo.", a: "puma" },
+    { t: "Me detengo a pensar en cómo volver a organizar y superarlo.", a: "jaguar" },
+    { t: "Acudo a mis redes de apoyo.", a: "colibri" },
+    { t: "Me desconecto un momento para escribir o hacer algo de arte en busca de introspección.", a: "quetzal" },
+    { t: "Interiorizo el obstáculo y continúo.", a: "lobo" }
+  ]},
+  { q: "¿Qué tipo de éxito te parece más satisfactorio?", options: [
+    { t: "Que mis ideas expandan nuevas posibilidades.", a: "cardenal" },
+    { t: "Contemplar mi sueño materializado.", a: "jaguar" },
+    { t: "Sentir que mi apoyo hizo una diferencia en el camino de otras personas.", a: "colibri" },
+    { t: "Visualizar el cambio simbólico o cultural que provoqué.", a: "quetzal" },
+    { t: "Que una injusticia no se esté replicando.", a: "puma" },
+    { t: "El acompañamiento que brindé por algo que valió la pena.", a: "lobo" }
+  ]},
+  { q: "¿Cuál de estas imágenes representa mejor tu energía creativa?", options: [
+    { t: "Una chispa encendiendo algo nuevo.", a: "cardenal" },
+    { t: "Un mapa detallado.", a: "jaguar" },
+    { t: "Un ave con alas abiertas.", a: "quetzal" },
+    { t: "Una raíz profunda.", a: "puma" },
+    { t: "Una fogata encendida en silencio.", a: "lobo" },
+    { t: "Un jardín en flor.", a: "colibri" }
+  ]},
+  { q: "¿Cómo describes tu forma de ver el mundo?", options: [
+    { t: "Paciente, resiliente y comprometida.", a: "lobo" },
+    { t: "Práctica, estructurada y orientada a resultados.", a: "jaguar" },
+    { t: "Intelectual, disruptiva y provocadora.", a: "cardenal" },
+    { t: "Relacional, cuidadosa y colaborativa.", a: "colibri" },
+    { t: "Visionaria, simbólica y creativa.", a: "quetzal" },
+    { t: "Crítica, ética y profunda.", a: "puma" }
+  ]},
+  { q: "¿Cuál de estos roles te resulta más natural?", options: [
+    { t: "Líder que organiza y dirige con estrategia.", a: "jaguar" },
+    { t: "El de quien cuida del grupo y de las relaciones.", a: "colibri" },
+    { t: "El de quien sueña en voz alta y crea nuevas formas de imaginar lo posible.", a: "quetzal" },
+    { t: "El de quien analiza y transforma a profundidad.", a: "puma" },
+    { t: "El de quien desafía lo establecido con ideas nuevas.", a: "cardenal" },
+    { t: "El de quien sostiene procesos sin buscar reconocimiento.", a: "lobo" }
+  ]}
+];
+
+const COLOR_ECONOMIES = [
+  { id:"verde", name:"Economía Verde", d:"Cuidas el planeta y usas recursos de forma sostenible: agricultura regenerativa, bioconstrucción, reciclaje, diseño circular." },
+  { id:"amarilla", name:"Economía Amarilla", d:"Te centras en tecnología, ciencia e innovación: startups, educación STEM, desarrollo de apps, robótica social." },
+  { id:"roja", name:"Economía Roja", d:"Te enfocas en generar consumo o experiencias nuevas: moda, entretenimiento, e-commerce, estilo de vida." },
+  { id:"naranja", name:"Economía Naranja", d:"Tu emprendimiento nace desde lo artístico o cultural: arte, diseño, música, contenidos creativos, propiedad intelectual." },
+  { id:"violeta", name:"Economía Violeta", d:"Tu misión es impulsar la equidad de género: negocios liderados por mujeres, formación feminista, redes de cuidado." },
+  { id:"azul", name:"Economía Azul", d:"Trabajas con mares y ecosistemas acuáticos: turismo marino, pesca sostenible, educación oceánica." },
+  { id:"plateada", name:"Economía Plateada", d:"Tu propuesta incluye y empodera a personas mayores: cuidados, servicios intergeneracionales, salud." }
+];
+
+/* ============ STATE + LOGIC ============ */
+let current = 0;
+let answers = [];
+let colorChoice = null;
+const TOTAL_STEPS = QUESTIONS.length + 1;
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+document.getElementById('btn-start').addEventListener('click', () => {
+  current = 0; answers = []; colorChoice = null;
+  showScreen('screen-quiz');
+  renderStep();
+});
+
+document.getElementById('btn-back').addEventListener('click', () => {
+  if(current > 0){ current -= 1; if(current < QUESTIONS.length){ answers.pop(); } else { colorChoice = null; } renderStep(); }
+});
+
+document.getElementById('btn-restart').addEventListener('click', () => {
+  current = 0; answers = []; colorChoice = null;
+  showScreen('screen-intro');
+});
+
+function renderStep(){
+  const stepNum = current + 1;
+  document.getElementById('progress-label').textContent = `Pregunta ${stepNum} de ${TOTAL_STEPS}`;
+  document.getElementById('progress-fill').style.width = `${(stepNum/TOTAL_STEPS)*100}%`;
+  document.getElementById('btn-back').style.display = current > 0 ? 'inline-block' : 'none';
+
+  const qTextEl = document.getElementById('q-text');
+  const optsEl = document.getElementById('q-options');
+  optsEl.innerHTML = '';
+
+  if(current < QUESTIONS.length){
+    const item = QUESTIONS[current];
+    qTextEl.textContent = item.q;
+    const letters = ['A','B','C','D','E','F'];
+    item.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option';
+      btn.innerHTML = `<span class="tag">${letters[i]}</span><span>${opt.t}</span>`;
+      btn.addEventListener('click', () => {
+        answers.push(opt.a);
+        current += 1;
+        renderStep();
+      });
+      optsEl.appendChild(btn);
+    });
+  } else {
+    qTextEl.textContent = "Una última pregunta: ¿con cuál economía de color te identificas más?";
+    COLOR_ECONOMIES.forEach((econ) => {
+      const btn = document.createElement('button');
+      btn.className = 'option';
+      btn.innerHTML = `<span class="tag">•</span><span><b>${econ.name}.</b> ${econ.d}</span>`;
+      btn.addEventListener('click', () => {
+        colorChoice = econ;
+        showResult();
+      });
+      optsEl.appendChild(btn);
+    });
+  }
+}
+
+function computeResult(){
+  const counts = {};
+  ANIMAL_ORDER.forEach(a => counts[a] = 0);
+  answers.forEach(a => counts[a] = (counts[a]||0) + 1);
+  let winner = ANIMAL_ORDER[0];
+  ANIMAL_ORDER.forEach(a => { if(counts[a] > counts[winner]) winner = a; });
+  return winner;
+}
+
+function showResult(){
+  const winner = computeResult();
+  const meta = PROFILE_META[winner];
+  const imgs = POSTERS[winner];
+
+  document.getElementById('result-name').textContent = `${meta.name} — ${meta.role}`;
+
+  const posterMain = document.getElementById('poster-main');
+  posterMain.src = imgs.main;
+  posterMain.alt = `Perfil emprendedor ${meta.name}: ${meta.role}`;
+
+  const posterAct = document.getElementById('poster-activities');
+  posterAct.src = imgs.activities;
+  posterAct.alt = `Actividades de crecimiento recomendadas para el perfil ${meta.name}`;
+
+  const dlMain = document.getElementById('download-main');
+  dlMain.href = imgs.main;
+  dlMain.setAttribute('download', `perfil-${winner}.jpg`);
+
+  const dlAct = document.getElementById('download-activities');
+  dlAct.href = imgs.activities;
+  dlAct.setAttribute('download', `actividades-${winner}.jpg`);
+
+  const colorEl = document.getElementById('result-color');
+  if(colorChoice){
+    colorEl.innerHTML = `También te identificaste con la <b>${colorChoice.name}</b>: ${colorChoice.d}`;
+  } else {
+    colorEl.innerHTML = '';
+  }
+
+  showScreen('screen-result');
+  window.scrollTo({top:0, behavior:'auto'});
+}
+</script>
+
+
+</body>
+</html>
